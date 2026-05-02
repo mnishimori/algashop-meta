@@ -65,3 +65,5 @@ out/
 
 ### PRD e TechSpec ###
 .ai-templates/SIPA-*
+
+.windsurf/
