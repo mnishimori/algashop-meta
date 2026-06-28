@@ -62,8 +62,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-### PRD e TechSpec ###
-.ai-templates/SIPA-*
-
-.windsurf/
