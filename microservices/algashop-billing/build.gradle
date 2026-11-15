@@ -1,83 +1,66 @@
 plugins {
-	id 'idea'
-	id 'java'
-	id 'org.springframework.boot' version '3.5.16'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'idea'
+    id 'java'
+    id 'org.springframework.boot' version '3.5.16'
+    id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.algaworks.algashop'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(25)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
-	mockitoAgent
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+    mockitoAgent
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.0'
-	implementation 'commons-validator:commons-validator:1.10.1'
-	implementation 'io.hypersistence:hypersistence-tsid:2.1.4'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	runtimeOnly 'com.h2database:h2'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testCompileOnly 'org.projectlombok:lombok'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	testAnnotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.assertj:assertj-core:3.27.7'
-	testImplementation 'org.mockito:mockito-core:5.15.2'
-	testImplementation 'org.mockito:mockito-junit-jupiter:5.15.2'
-	mockitoAgent('org.mockito:mockito-core:5.15.2') {transitive = false}
+    implementation 'com.fasterxml.uuid:java-uuid-generator:5.1.0'
+    implementation 'commons-validator:commons-validator:1.10.1'
+    implementation 'io.hypersistence:hypersistence-tsid:2.1.4'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.assertj:assertj-core:3.27.7'
+    testImplementation 'org.mockito:mockito-core:5.15.2'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.15.2'
+    mockitoAgent('org.mockito:mockito-core:5.15.2') { transitive = false }
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-
-test {
-	filter {
-		excludeTestsMatching("*IT")
-	}
-	jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
-}
-
-tasks.named('check') {
-	dependsOn(test, integrationTest)
+tasks.named('test', Test) {
+    description = 'Runs the unit tests.'
+    group = 'verification'
+    useJUnitPlatform({
+        excludeTags 'integrationTest'
+    })
+    jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
 }
 
 tasks.register('integrationTest', Test) {
-	description = 'Run integration tests.'
-	group = 'verification'
-	jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
-
-	testClassesDirs = sourceSets.test.output.classesDirs
-	classpath = sourceSets.test.runtimeClasspath
-
-	shouldRunAfter test
-
-	useJUnitPlatform()
-
-	testLogging {
-		events "passed"
-	}
-
-	filter {
-		includeTestsMatching "*IT"
-		excludeTestsMatching "*Test"
-	}
+    description = 'Runs the integration tests.'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    shouldRunAfter tasks.named('test')
+    useJUnitPlatform {
+        includeTags 'integrationTest'
+    }
+    jvmArgs += "-javaagent:${configurations.mockitoAgent.asPath}"
 }

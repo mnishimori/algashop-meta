@@ -3,8 +3,8 @@ package com.algaworks.algashop.billing;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class BillingApplicationTests {
+@IntegrationTest
+class BillingApplicationIT {
 
 	@Test
 	void contextLoads() {
